@@ -85,7 +85,7 @@ defmodule Vex do
   """
   def validator(name) do
     case name |> validator(sources()) do
-      nil -> raise InvalidValidatorError, validator: name, sources: sources()
+      nil -> validator_error!(name, sources())
       found -> found
     end
   end
@@ -108,6 +108,11 @@ defmodule Vex do
     Enum.find_value(sources, fn source ->
       Source.lookup(source, name)
     end)
+  end
+
+  @doc false
+  def validator_error!(name, sources) do
+    raise InvalidValidatorError, validator: name, sources: sources
   end
 
   defp sources do

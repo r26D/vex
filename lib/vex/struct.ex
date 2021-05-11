@@ -5,6 +5,7 @@ defmodule Vex.Struct do
     quote do
       @vex_validations %{}
       @precompile_validator_lookup unquote(Keyword.get(opts, :precompile_validator_lookup, false))
+      @precompile_sources unquote(Keyword.get(opts, :precompile_sources, [Vex.Validators]))
       @precompiled_validator_lookup %{}
       @before_compile unquote(__MODULE__)
       import unquote(__MODULE__)
@@ -41,14 +42,38 @@ defmodule Vex.Struct do
                                             Map.put_new_lazy(
                                               lookup,
                                               validator_name,
-                                              fn -> Vex.validator(validator_name) end
+                                              fn ->
+                                                IO.puts("Going to use the validator here?")
+
+                                                case Vex.validator(
+                                                       validator_name,
+                                                       @precompile_sources
+                                                     ) do
+                                                  nil ->
+                                                    Vex.validator_error!(
+                                                      validator_name,
+                                                      @precompile_sources
+                                                    )
+
+                                                  found ->
+                                                    found
+                                                end
+                                              end
                                             )
 
                                           fun, lookup when is_function(fun) ->
                                             Map.put_new_lazy(
                                               lookup,
                                               :by,
-                                              fn -> Vex.validator(:by) end
+                                              fn ->
+                                                case Vex.validator(:by, @precompile_sources) do
+                                                  nil ->
+                                                    Vex.validator_error!(:by, @precompile_sources)
+
+                                                  found ->
+                                                    found
+                                                end
+                                              end
                                             )
                                         end
                                       )

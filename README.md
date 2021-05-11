@@ -359,6 +359,14 @@ This comes at the cost of precomputing the validator lookup at compile time.
 Runtime modification of the validator lookup from updating the Vex config (i.e., `config :vex, sources: [..]`)
 will not have an effect if you are using this method.
 
+You can set a look up for the sources during compile by adding precompile_sources.  You need to include Vex.Validators 
+if you override this value. Also, in order to get the process to load properly you need to define the keys that the modules
+handle instead of doing it dynamically.
+```elixir
+use Vex.Struct,
+    precompile_validator_lookup: true,
+    precompile_sources: [[uuid: My.Validator.UUID], Vex.Validators]
+```
 ### In Keyword Lists
 
 In your list, just include a `:_vex` entry and use `Vex.valid?/1`:
