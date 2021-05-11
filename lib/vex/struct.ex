@@ -43,8 +43,6 @@ defmodule Vex.Struct do
                                               lookup,
                                               validator_name,
                                               fn ->
-                                                IO.puts("Going to use the validator here?")
-
                                                 case Vex.validator(
                                                        validator_name,
                                                        @precompile_sources
